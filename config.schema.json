@@ -2,76 +2,106 @@
   "pluginAlias": "HTTP-JSON-DIMMER",
   "pluginType": "platform",
   "singular": true,
+  "headerDisplay": "Configure your HTTP JSON Dimmer devices below.",
+  "footerDisplay": "For more information visit the [GitHub repository](https://github.com/yourusername/homebridge-http-json-dimmer).",
   "schema": {
     "type": "object",
-    "required": ["devices"],
     "properties": {
+      "name": {
+        "title": "Platform Name",
+        "type": "string",
+        "default": "HTTP-JSON-DIMMER",
+        "required": false
+      },
       "devices": {
         "type": "array",
         "title": "Devices",
         "items": {
           "type": "object",
-          "required": ["name", "onUrl", "offUrl"],
           "properties": {
             "id": {
               "type": "string",
-              "title": "ID (optional, recommended)",
-              "description": "Unique identifier for the device"
+              "title": "ID",
+              "description": "Unique identifier for the device (optional but recommended)",
+              "required": false
             },
             "name": {
               "type": "string",
               "title": "Name",
-              "description": "Display name for the device"
+              "description": "Display name for the device",
+              "required": true
             },
             "onUrl": {
               "type": "string",
               "title": "ON URL",
-              "description": "URL to turn the device on"
+              "description": "URL to turn the device on",
+              "required": true,
+              "placeholder": "http://192.168.1.100/on"
             },
             "offUrl": {
               "type": "string",
               "title": "OFF URL",
-              "description": "URL to turn the device off"
+              "description": "URL to turn the device off",
+              "required": true,
+              "placeholder": "http://192.168.1.100/off"
             },
             "statusUrl": {
               "type": "string",
               "title": "Status URL",
-              "description": "URL to get the current on/off status"
+              "description": "URL to get the current on/off status (optional)",
+              "required": false,
+              "placeholder": "http://192.168.1.100/status"
             },
             "onJsonPath": {
               "type": "string",
               "title": "ON JSON Path",
               "default": "$.on",
-              "description": "JSONPath or dot notation to extract on/off value from status response"
+              "description": "JSONPath to extract on/off value from status response",
+              "required": false
             },
             "setBrightnessUrl": {
               "type": "string",
               "title": "Set Brightness URL",
-              "description": "URL to set brightness (append brightness value to this URL)"
+              "description": "URL to set brightness - brightness value will be appended (optional)",
+              "required": false,
+              "placeholder": "http://192.168.1.100/brightness/"
             },
             "getBrightnessUrl": {
               "type": "string",
               "title": "Get Brightness URL",
-              "description": "URL to get current brightness"
+              "description": "URL to get current brightness (optional)",
+              "required": false,
+              "placeholder": "http://192.168.1.100/brightness"
             },
             "brightnessJsonPath": {
               "type": "string",
               "title": "Brightness JSON Path",
               "default": "$.brightness",
-              "description": "JSONPath or dot notation to extract brightness value"
+              "description": "JSONPath to extract brightness value",
+              "required": false
             },
             "brightnessScale": {
               "type": "string",
               "title": "Brightness Scale (Read)",
               "default": "0-100",
-              "enum": ["0-100", "0-255", "0-1"],
-              "description": "Scale used when reading brightness from device"
+              "oneOf": [
+                { "title": "0-100", "enum": ["0-100"] },
+                { "title": "0-255", "enum": ["0-255"] },
+                { "title": "0-1", "enum": ["0-1"] }
+              ],
+              "description": "Scale used when reading brightness from device",
+              "required": false
             },
             "brightnessWriteScale": {
               "type": "string",
               "title": "Brightness Scale (Write)",
-              "enum": ["0-100", "0-255", "0-1"],
-              "description": "Scale used when writing brightness to device (defaults to brightnessScale)"
+              "oneOf": [
+                { "title": "0-100", "enum": ["0-100"] },
+                { "title": "0-255", "enum": ["0-255"] },
+                { "title": "0-1", "enum": ["0-1"] }
+              ],
+              "description": "Scale used when writing brightness (defaults to read scale)",
+              "required": false
             },
             "timeoutMs": {
               "type": "integer",
@@ -79,36 +109,54 @@
               "default": 4000,
               "minimum": 500,
               "maximum": 20000,
-              "description": "HTTP request timeout in milliseconds"
+              "description": "HTTP request timeout in milliseconds",
+              "required": false
             },
             "manufacturer": {
               "type": "string",
               "title": "Manufacturer",
-              "description": "Manufacturer name (optional)"
+              "description": "Manufacturer name (optional)",
+              "required": false
             },
             "model": {
               "type": "string",
               "title": "Model",
-              "description": "Model name (optional)"
+              "description": "Model name (optional)",
+              "required": false
             },
             "serial": {
               "type": "string",
               "title": "Serial Number",
-              "description": "Serial number (optional)"
+              "description": "Serial number (optional)",
+              "required": false
             }
           }
-        },
-        "default": []
+        }
       }
     }
   },
   "layout": [
     {
-      "type": "array",
       "key": "devices",
+      "type": "array",
+      "title": "Devices",
+      "buttonText": "Add Device",
       "items": [
-        "devices[].name",
-        "devices[].id",
+        {
+          "type": "div",
+          "displayFlex": true,
+          "flex-direction": "row",
+          "items": [
+            {
+              "key": "devices[].name",
+              "flex": "1 1 50%"
+            },
+            {
+              "key": "devices[].id",
+              "flex": "1 1 50%"
+            }
+          ]
+        },
         {
           "type": "fieldset",
           "title": "URLs",
@@ -124,20 +172,33 @@
         },
         {
           "type": "fieldset",
-          "title": "JSON Paths & Settings",
+          "title": "JSON Configuration",
           "expandable": true,
           "expanded": false,
           "items": [
             "devices[].onJsonPath",
             "devices[].brightnessJsonPath",
-            "devices[].brightnessScale",
-            "devices[].brightnessWriteScale",
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "devices[].brightnessScale",
+                  "flex": "1 1 50%"
+                },
+                {
+                  "key": "devices[].brightnessWriteScale",
+                  "flex": "1 1 50%"
+                }
+              ]
+            },
             "devices[].timeoutMs"
           ]
         },
         {
           "type": "fieldset",
-          "title": "Device Information (Optional)",
+          "title": "Device Information",
           "expandable": true,
           "expanded": false,
           "items": [
