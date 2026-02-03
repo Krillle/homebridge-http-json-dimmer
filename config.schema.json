@@ -15,53 +15,138 @@
           "properties": {
             "id": {
               "type": "string",
-              "title": "ID (optional, recommended)"
+              "title": "ID (optional, recommended)",
+              "description": "Unique identifier for the device"
             },
             "name": {
               "type": "string",
-              "title": "Name"
+              "title": "Name",
+              "description": "Display name for the device"
             },
             "onUrl": {
               "type": "string",
-              "title": "ON URL"
+              "title": "ON URL",
+              "description": "URL to turn the device on"
             },
             "offUrl": {
               "type": "string",
-              "title": "OFF URL"
+              "title": "OFF URL",
+              "description": "URL to turn the device off"
             },
             "statusUrl": {
               "type": "string",
-              "title": "Status URL"
+              "title": "Status URL",
+              "description": "URL to get the current on/off status"
             },
             "onJsonPath": {
               "type": "string",
               "title": "ON JSON Path",
-              "default": "$.on"
+              "default": "$.on",
+              "description": "JSONPath or dot notation to extract on/off value from status response"
             },
             "setBrightnessUrl": {
               "type": "string",
-              "title": "Set Brightness URL"
+              "title": "Set Brightness URL",
+              "description": "URL to set brightness (append brightness value to this URL)"
             },
             "getBrightnessUrl": {
               "type": "string",
-              "title": "Get Brightness URL"
+              "title": "Get Brightness URL",
+              "description": "URL to get current brightness"
             },
             "brightnessJsonPath": {
               "type": "string",
               "title": "Brightness JSON Path",
-              "default": "$.brightness"
+              "default": "$.brightness",
+              "description": "JSONPath or dot notation to extract brightness value"
+            },
+            "brightnessScale": {
+              "type": "string",
+              "title": "Brightness Scale (Read)",
+              "default": "0-100",
+              "enum": ["0-100", "0-255", "0-1"],
+              "description": "Scale used when reading brightness from device"
+            },
+            "brightnessWriteScale": {
+              "type": "string",
+              "title": "Brightness Scale (Write)",
+              "enum": ["0-100", "0-255", "0-1"],
+              "description": "Scale used when writing brightness to device (defaults to brightnessScale)"
             },
             "timeoutMs": {
               "type": "integer",
               "title": "HTTP Timeout (ms)",
               "default": 4000,
               "minimum": 500,
-              "maximum": 20000
+              "maximum": 20000,
+              "description": "HTTP request timeout in milliseconds"
+            },
+            "manufacturer": {
+              "type": "string",
+              "title": "Manufacturer",
+              "description": "Manufacturer name (optional)"
+            },
+            "model": {
+              "type": "string",
+              "title": "Model",
+              "description": "Model name (optional)"
+            },
+            "serial": {
+              "type": "string",
+              "title": "Serial Number",
+              "description": "Serial number (optional)"
             }
           }
         },
         "default": []
       }
     }
-  }
+  },
+  "layout": [
+    {
+      "type": "array",
+      "key": "devices",
+      "items": [
+        "devices[].name",
+        "devices[].id",
+        {
+          "type": "fieldset",
+          "title": "URLs",
+          "expandable": true,
+          "expanded": true,
+          "items": [
+            "devices[].onUrl",
+            "devices[].offUrl",
+            "devices[].statusUrl",
+            "devices[].setBrightnessUrl",
+            "devices[].getBrightnessUrl"
+          ]
+        },
+        {
+          "type": "fieldset",
+          "title": "JSON Paths & Settings",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].onJsonPath",
+            "devices[].brightnessJsonPath",
+            "devices[].brightnessScale",
+            "devices[].brightnessWriteScale",
+            "devices[].timeoutMs"
+          ]
+        },
+        {
+          "type": "fieldset",
+          "title": "Device Information (Optional)",
+          "expandable": true,
+          "expanded": false,
+          "items": [
+            "devices[].manufacturer",
+            "devices[].model",
+            "devices[].serial"
+          ]
+        }
+      ]
+    }
+  ]
 }
